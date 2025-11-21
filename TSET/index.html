@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>傑利鼠背景網頁</title>
+  <style>
+    /* 讓整個畫面用傑利鼠當背景 */
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;                 /* 讓高度撐滿視窗 */
+      background-image: url("jerry.jpg"); /* 這裡換成你的圖片檔名 */
+      background-size: cover;        /* 背景等比例放大，填滿畫面 */
+      background-position: center;   /* 置中顯示 */
+      background-repeat: no-repeat;  /* 不重複平鋪 */
+      font-family: Arial, "Microsoft JhengHei", sans-serif;
+    }
+
+    /* 中間放一個半透明區塊，可以寫文字 */
+    .content {
+      background: rgba(255, 255, 255, 0.7);
+      padding: 20px 40px;
+      border-radius: 12px;
+      max-width: 400px;
+      margin: 40px;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>歡迎來到我的傑利鼠網頁</h1>
+    <p>這裡可以放你的介紹文字、連結或按鈕。</p>
+  </div>
+</body>
+</html>
