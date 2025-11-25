@@ -2,40 +2,260 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>傑利鼠背景網頁</title>
+  <title>Jerry Cake Card</title>
   <style>
-    /* 讓整個畫面用傑利鼠當背景 */
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      padding: 0;
-      height: 100vh;                 /* 讓高度撐滿視窗 */
-      background-image: url("jerry2.jpg"); /* 這裡換成你的圖片檔名 */
-      background-size: cover;        /* 背景等比例放大，填滿畫面 */
-      background-position: center;   /* 置中顯示 */
-      background-repeat: no-repeat;  /* 不重複平鋪 */
-      font-family: Arial, "Microsoft JhengHei", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Microsoft JhengHei", system-ui, sans-serif;
+      background-color: #fdf3e7;
+      position: relative;
+      overflow: hidden;
     }
 
-    /* 中間放一個半透明區塊，可以寫文字 */
-    .content {
-      background: rgba(255, 255, 255, 0.7);
-      padding: 20px 40px;
-      border-radius: 12px;
-      max-width: 400px;
-      margin: 40px;
+    /* 背景蛋糕圖（透明度在這裡調整） */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("jerry2.jpg"); /* ← 在這裡換成傑利鼠蛋糕圖片路徑 */
+      background-size: contain;  /* 想要整個滿版可以改成 cover */
+      background-repeat: no-repeat;
+      background-position: center;
+      opacity: 0.45;            /* 透明度，0~1 之間，可自行調整 */
+      z-index: -1;
     }
 
-    h1 {
+    .card-wrapper {
+      position: relative;
+      perspective: 1200px;
+    }
+
+    .card {
+      width: 360px;
+      height: 240px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    /* 卡片的內部（實際內容區塊） */
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+
+      /* 預設邊框（單色） */
+      border: 6px solid #ffd54f;
+
+      /* 🎀 如果你有自己的卡片邊框圖片，把下面三行註解打開，並把路徑改掉
+      border: 20px solid transparent;
+      border-image: url("卡片邊框E.png") 30 round;  /* ← 在這裡換成你的邊框圖檔 */
+      */
+    }
+
+    /* 卡片封面（打開的感覺） */
+    .card-cover {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #ffcc80, #ffb74d);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #5d4037;
+      font-weight: bold;
+      font-size: 1.4rem;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      transform-origin: left center;
+      transform: rotateY(0deg);
+      transition: transform 0.8s ease, box-shadow 0.8s ease;
+      backface-visibility: hidden;
+      z-index: 2;
+    }
+
+    .card-cover::after {
+      content: "點我打開卡片";
+      position: absolute;
+      bottom: 18px;
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+
+    /* 卡片打開後封面翻轉 */
+    .card.open .card-cover {
+      transform: rotateY(-180deg);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* 內文區塊：這裡留給你寫文字 / 加圖片 / 其它元素 */
+    .card-message {
+      width: 100%;
+      height: 100%;
+      color: #5d4037;
+      overflow-y: auto;
+    }
+
+    .card-message h2 {
       margin-top: 0;
+      text-align: center;
+      color: #ff9800;
+    }
+
+    .card-message p {
+      line-height: 1.6;
+      margin: 8px 0;
+    }
+
+    /* 愛心容器（整個畫面上飄） */
+    .hearts-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: visible;
+      z-index: 10;
+    }
+
+    .heart {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: #ff6fae;
+      transform: translate(-50%, -50%) rotate(45deg) scale(0.8);
+      opacity: 0;
+      animation: floatUp 2s ease-out forwards;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: #ff6fae;
+      border-radius: 50%;
+      top: -8px;
+      left: 0;
+    }
+
+    .heart::after {
+      top: 0;
+      left: -8px;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(45deg) scale(0.8);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(
+          calc(-50% + var(--x-offset, 0px)),
+          calc(-50% - 140px)
+        )
+        rotate(45deg)
+        scale(1.8);
+      }
+    }
+
+    /* 小提示文字 */
+    .hint {
+      margin-top: 12px;
+      text-align: center;
+      color: #6d4c41;
+      font-size: 0.9rem;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
     }
   </style>
 </head>
 <body>
-  <div class="content">
-    <h1>Happy Birthday</h1>
-    <p>12/8</p>
-    <p>test</p>
+  <div class="card-wrapper">
+    <div class="card" id="card">
+      <!-- 卡片實際內容 -->
+      <div class="card-inner">
+        <div class="card-message">
+          <!-- ⭐ 卡片標題 / 內文：這一區塊完全留給你編輯 ⭐ -->
+          <h2>在這裡寫你的標題</h2>
+          <p>
+            這裡是卡片內文的範例。<br>
+            你可以把這段文字刪掉，改成生日祝福、告白、紀念日留言，
+            或是插入圖片、表情符號、甚至小表格都可以。
+          </p>
+          <p>
+            想寫很多文字也沒關係，這個區域可以捲動。
+          </p>
+        </div>
+      </div>
+
+      <!-- 卡片封面（會翻開） -->
+      <div class="card-cover">
+        <span>Happy Day</span>
+      </div>
+    </div>
+    <div class="hint">點卡片試試看，會有愛心從中間飛出 💖</div>
   </div>
+
+  <!-- 愛心容器 -->
+  <div class="hearts-container" id="hearts"></div>
+
+  <script>
+    const card = document.getElementById("card");
+    const heartsContainer = document.getElementById("hearts");
+
+    card.addEventListener("click", () => {
+      const isOpening = !card.classList.contains("open");
+      card.classList.toggle("open");
+
+      if (isOpening) {
+        launchHearts();
+      }
+    });
+
+    function launchHearts() {
+      // 從卡片中心位置發射愛心
+      const rect = card.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const totalHearts = 22;
+
+      for (let i = 0; i < totalHearts; i++) {
+        setTimeout(() => {
+          createHeart(centerX, centerY);
+        }, i * 120); // 每顆愛心延遲一點，感覺比較有「一波一波散開」
+      }
+    }
+
+    function createHeart(x, y) {
+      const heart = document.createElement("span");
+      heart.classList.add("heart");
+
+      // 給每個愛心一點左右的隨機偏移量
+      const offset = (Math.random() * 220 - 110).toFixed(0); // -110 ~ 110px
+      heart.style.setProperty("--x-offset", offset + "px");
+
+      heart.style.left = x + "px";
+      heart.style.top = y + "px";
+
+      heartsContainer.appendChild(heart);
+
+      heart.addEventListener("animationend", () => {
+        heart.remove();
+      });
+    }
+  </script>
 </body>
-</html>
 </html>
