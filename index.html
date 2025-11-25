@@ -17,41 +17,34 @@
       padding: 16px;
       overflow: hidden;
       position: relative;
+      background-color: #f7e6d4; /* 背景打底顏色，避免圖外是黑邊 */
     }
 
     /* ===============================
-       電腦版：滿版 + 不裁切背景（contain）
-       以柔焦漸層填補空白區域
+       電腦版：背景清楚、完整顯示（contain）
        =============================== */
     body::before {
       content: "";
       position: fixed;
       inset: 0;
 
-      /* 背景蛋糕圖（完整顯示） */
-      background-image: url("jerry2.jpg");
-
-      background-size: contain;          /* ✔ 不裁切 */
+      background-image: url("jerry2.jpg"); /* ← 你的蛋糕背景圖 */
+      background-size: contain;            /* 不裁切，完整顯示 */
       background-repeat: no-repeat;
       background-position: center;
 
-      /* 周圍用柔和背景填補（避免黑邊） */
-      background-color: #f7e6d4;         /* 可自行改顏色 */
-
-      /* 柔焦背景混合 */
-      background-blend-mode: soft-light;
-      opacity: 0.8;
-
+      opacity: 1;                          /* ✔ 清楚顯示，不霧化 */
       z-index: -1;
     }
 
     /* ===============================
-       手機版背景：採 cover（裁切，但畫面漂亮）
+       手機版：cover，鋪滿螢幕（會略為裁切）
        =============================== */
     @media (max-width: 600px) {
       body::before {
-        background-size: cover;     /* ✔ 手機改為滿版裁切 */
-        opacity: 0.55;              /* 讓前景更清楚 */
+        background-size: cover;           /* 手機改為滿版 */
+        background-position: center;
+        opacity: 1;                       /* 同樣清楚顯示 */
       }
     }
 
@@ -104,7 +97,7 @@
       font-size: 0.95rem;
     }
 
-    /* ======== 封面 ======== */
+    /* ======== 封面：咖啡色 + 緞帶 + 蝴蝶結 ======== */
     .card-cover {
       position: absolute;
       inset: 0;
@@ -149,15 +142,16 @@
       top: 32%;
       left: 50%;
       transform: translate(-50%, -55%);
-      background-image: url("bow.png"); /* 你的蝴蝶結圖 */
+      background-image: url("bow.png"); /* ← 這張放你前面生成那張蝴蝶結 PNG */
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
       z-index: 4;
       transition: transform 0.7s ease, opacity 0.7s ease;
+      pointer-events: none;
     }
 
-    /* 提示文字（更清楚） */
+    /* 提示文字（改成清楚亮色） */
     .cover-hint {
       position: absolute;
       bottom: 20px;
@@ -178,7 +172,7 @@
       transform: scale(1.03);
     }
 
-    /* 緞帶解開 */
+    /* 緞帶自然解開動畫 */
     .card-cover.untie .ribbon-vertical {
       transform: translateX(-250%);
       opacity: 0;
@@ -241,8 +235,14 @@
 
     /* 手機尺寸 */
     @media (max-width: 600px) {
-      .card { width: 90vw; height: 60vw; }
-      .bow { width: 120px; height: 120px; }
+      .card {
+        width: 90vw;
+        height: 60vw;
+      }
+      .bow {
+        width: 120px;
+        height: 120px;
+      }
     }
   </style>
 </head>
@@ -256,7 +256,7 @@
         <div class="card-message">
           <h2>在這裡寫你的標題</h2>
           <p>這裡是卡片內文的範例。</p>
-          <p>你可以把這段文字改成自己的內容。</p>
+          <p>你可以把這段文字改成自己的內容，例如生日祝福、紀念日告白等等。</p>
         </div>
       </div>
 
@@ -281,27 +281,21 @@
     let isOpen = false;
 
     card.addEventListener("click", () => {
-
       if (!isOpen) {
+        // 開卡片
         isOpen = true;
-
-        cover.classList.add("untie");
+        cover.classList.add("untie");   // 緞帶解開
 
         setTimeout(() => {
-          card.classList.add("open");
-          launchHearts();
+          card.classList.add("open");   // 封面淡出
+          launchHearts();               // 愛心從中間散出
         }, 750);
 
       } else {
+        // 關卡片
         isOpen = false;
-
-        card.classList.remove("open");
-        cover.classList.remove("untie");
-
-        setTimeout(() => {
-          cover.style.opacity = "1";
-          cover.style.transform = "scale(1)";
-        }, 50);
+        card.classList.remove("open");  // 封面回來（opacity 在 CSS）
+        cover.classList.remove("untie");// 緞帶 & 蝴蝶結復原
       }
     });
 
@@ -333,6 +327,7 @@
 
 </body>
 </html>
+
 
 
 
