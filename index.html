@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Jerry Cake Card</title>
+  <!-- 手機顯示必備 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * { box-sizing: border-box; }
@@ -25,7 +26,7 @@
       content: "";
       position: fixed;
       inset: 0;
-      background-image: url("jerry2.jpg");
+      background-image: url("jerry2.jpg"); /* 你的蛋糕背景 */
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
@@ -82,24 +83,62 @@
     }
 
     /* ============================
-       卡片封面：直接用禮盒圖片
+       卡片封面：咖啡色＋緞帶＋蝴蝶結
        ============================ */
     .card-cover {
       position: absolute;
       inset: 0;
       border-radius: 20px;
-      background-color: #4b2f33;              /* 萬一圖片載不到的底色 */
-      background-image: url("gift-cover.png");/* ← 把圖存成這個檔名 */
-      background-size: cover;                 /* 圖片填滿卡片 */
-      background-position: center;
-      background-repeat: no-repeat;
-
+      background-color: #4b2f33;  /* 咖啡色紙 */
       box-shadow: 0 16px 40px rgba(0,0,0,0.35);
       z-index: 3;
       backface-visibility: hidden;
+      overflow: hidden;
       opacity: 1;
       transform: scale(1);
       transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    /* 粉色緞帶：十字包住卡片 */
+    .ribbon-vertical,
+    .ribbon-horizontal {
+      position: absolute;
+      background: linear-gradient(180deg,#fcd0e3,#f7a7cd,#fcd0e3);
+      box-shadow: 0 0 8px rgba(255,182,210,0.6) inset;
+      border-radius: 999px;
+      transition: transform 0.7s ease, opacity 0.7s ease;
+    }
+
+    .ribbon-vertical {
+      width: 26px;
+      height: 120%;
+      left: 50%;
+      top: -10%;
+      transform: translateX(-50%);
+    }
+
+    .ribbon-horizontal {
+      width: 120%;
+      height: 26px;
+      left: -10%;
+      top: 32%;
+    }
+
+    /* 蝴蝶結本體：使用你剛剛存的 bow.png */
+    .bow {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      top: 32%;          /* 位置大約在十字交叉處 */
+      left: 50%;
+      transform: translate(-50%, -55%);
+      background-image: url("bow.png");  /* ← 把生成的圖存成 bow.png */
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 4;
+      pointer-events: none;
+      transition: transform 0.7s ease, opacity 0.7s ease;
     }
 
     .cover-hint {
@@ -113,7 +152,7 @@
       opacity: 0.9;
     }
 
-    /* 卡片已開啟時，封面退場 */
+    /* 卡片已開啟：封面整體淡出 */
     .card.open .card-cover {
       opacity: 0;
       transform: scale(1.03);
@@ -121,19 +160,21 @@
     }
 
     /* ============================
-       封面（整張禮盒）抖動動畫
+       自然解開動畫（緞帶左右滑開＋蝴蝶結飛走）
        ============================ */
-    @keyframes coverShake {
-      0%   { transform: scale(1) translate(0,0) rotate(0deg); }
-      20%  { transform: scale(1.02) translate(-2px,1px) rotate(-2deg); }
-      40%  { transform: scale(1.02) translate(2px,-1px) rotate(2deg); }
-      60%  { transform: scale(1.01) translate(-1px,1px) rotate(-1.5deg); }
-      80%  { transform: scale(1.01) translate(1px,-1px) rotate(1.5deg); }
-      100% { transform: scale(1) translate(0,0) rotate(0deg); }
+    .card-cover.untie .ribbon-vertical {
+      transform: translateX(-250%);  /* 垂直帶往左滑出畫面 */
+      opacity: 0;
     }
 
-    .cover-shake {
-      animation: coverShake 0.5s ease;
+    .card-cover.untie .ribbon-horizontal {
+      transform: translateX(250%);   /* 水平帶往右滑出畫面 */
+      opacity: 0;
+    }
+
+    .card-cover.untie .bow {
+      transform: translate(-50%, -150%) scale(0.9); /* 蝴蝶結往上飛 */
+      opacity: 0;
     }
 
     /* ============================
@@ -189,6 +230,10 @@
         width: 90vw;
         height: 60vw;
       }
+      .bow {
+        width: 120px;
+        height: 120px;
+      }
     }
   </style>
 </head>
@@ -212,8 +257,11 @@
         </div>
       </div>
 
-      <!-- 封面（整張禮盒圖） -->
+      <!-- 封面：咖啡色紙＋粉緞帶＋蝴蝶結 -->
       <div class="card-cover" id="cover">
+        <div class="ribbon-vertical"></div>
+        <div class="ribbon-horizontal"></div>
+        <div class="bow"></div>
         <div class="cover-hint">點一下打開卡片 💖</div>
       </div>
 
@@ -234,14 +282,14 @@
       if (opened) return;
       opened = true;
 
-      // 1️⃣ 先讓整個封面抖一下
-      cover.classList.add("cover-shake");
+      // 1️⃣ 緞帶 & 蝴蝶結開始解開動畫
+      cover.classList.add("untie");
 
-      // 2️⃣ 抖完後，再把封面淡出、顯示內文 + 愛心
+      // 2️⃣ 等緞帶滑開後，再讓封面淡出 + 出現內文 & 愛心
       setTimeout(() => {
         card.classList.add("open");
         launchHearts();
-      }, 520);
+      }, 750); // 要跟 CSS 的 transition 時間差不多
     });
 
     function launchHearts() {
@@ -274,5 +322,6 @@
 
 </body>
 </html>
+
 
 
