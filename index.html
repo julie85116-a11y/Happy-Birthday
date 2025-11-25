@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Jerry Cake Card</title>
-  <!-- 手機顯示必備，讓寬度跟隨裝置 -->
+  <!-- 手機顯示必備 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * {
@@ -20,19 +20,19 @@
       background-color: #fdf3e7;
       position: relative;
       overflow: hidden;
-      padding: 16px; /* 手機時避免卡片貼邊 */
+      padding: 16px;
     }
 
-    /* 背景蛋糕圖（透明度在這裡調整） */
+    /* 背景蛋糕圖 */
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      background-image: url("jerry2.jpg"); /* ← 這裡放你的傑利鼠蛋糕圖片路徑 */
-      background-size: contain;  /* 想要滿版可改 cover */
+      background-image: url("jerry2.jpg");
+      background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
-      opacity: 0.65;            /* 透明度，0~1 之間，可自行調整 */
+      opacity: 0.65;
       z-index: -1;
     }
 
@@ -47,12 +47,12 @@
 
     .card {
       width: 360px;
-      height: 240px; /* 預設電腦版大小 */
+      height: 240px;
       position: relative;
       cursor: pointer;
     }
 
-    /* 卡片的內部（實際內容區塊） */
+    /* 卡片內容 */
     .card-inner {
       width: 100%;
       height: 100%;
@@ -63,17 +63,10 @@
       position: relative;
       z-index: 1;
       overflow: hidden;
-
-      /* 預設邊框（單色） */
       border: 6px solid #ffd54f;
-
-      /* 🎀 如果你有自己的卡片邊框圖片，把下面三行註解打開，並把路徑改掉
-      border: 20px solid transparent;
-      border-image: url("卡片邊框E.png") 30 round;
-      */
     }
 
-    /* 卡片封面（打開的感覺） */
+    /* 卡片封面 */
     .card-cover {
       position: absolute;
       inset: 0;
@@ -90,7 +83,7 @@
       transform: rotateY(0deg);
       transition: transform 0.8s ease, box-shadow 0.8s ease;
       backface-visibility: hidden;
-      z-index: 2;
+      z-index: 3; /* 封面最上層 */
     }
 
     .card-cover::after {
@@ -101,13 +94,37 @@
       opacity: 0.85;
     }
 
-    /* 卡片打開後封面翻轉 */
+    /* 🎀 蝴蝶結 */
+    .bow {
+      position: absolute;
+      width: 120px;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.6s ease;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    /* 蝴蝶結綁住時縮尺寸 + 有立體感 */
+    .bow-tied {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+
+    /* 開啟 → 蝴蝶結淡出散開 */
+    .bow-open {
+      transform: translate(-50%, -120%) scale(1.6) rotate(20deg);
+      opacity: 0;
+    }
+
+    /* 卡片打開 */
     .card.open .card-cover {
       transform: rotateY(-180deg);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
-    /* 內文區塊：這裡留給你寫文字 / 加圖片 / 其它元素 */
+    /* 內文 */
     .card-message {
       width: 100%;
       height: 100%;
@@ -128,7 +145,7 @@
       font-size: 0.95rem;
     }
 
-    /* 愛心容器（整個畫面上飄） */
+    /* 愛心飄散 */
     .hearts-container {
       position: fixed;
       inset: 0;
@@ -172,7 +189,7 @@
       100% {
         opacity: 0;
         transform: translate(
-          calc(-50% + var(--x-offset, 0px)),
+          calc(-50% + var(--x-offset)),
           calc(-50% - 140px)
         )
         rotate(45deg)
@@ -180,60 +197,28 @@
       }
     }
 
-    /* 小提示文字 */
-    .hint {
-      margin-top: 12px;
-      text-align: center;
-      color: #6d4c41;
-      font-size: 0.9rem;
-      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
-    }
-
-    /* ========= 手機版 RWD ========= */
     @media (max-width: 600px) {
-      body {
-        padding: 12px;
-      }
-
       .card {
-        width: 90vw;           /* 寬度跟著螢幕走 */
-        height: 60vw;          /* 照比例縮小，避免太高 */
-        max-width: 380px;
-        max-height: 260px;
+        width: 90vw;
+        height: 60vw;
       }
-
-      .card-inner {
-        padding: 16px;
-        border-radius: 16px;
-      }
-
-      .card-cover {
-        border-radius: 16px;
-        font-size: 1.1rem;
-      }
-
-      .card-cover::after {
-        font-size: 0.8rem;
-        bottom: 14px;
-      }
-
-      .card-message h2 {
-        font-size: 1.1rem;
-      }
-
-      .card-message p {
-        font-size: 0.85rem;
+      .bow {
+        width: 90px;
       }
     }
   </style>
 </head>
 <body>
+
   <div class="card-wrapper">
     <div class="card" id="card">
+
+      <!-- 🎀 蝴蝶結 -->
+      <img src="bow.png" class="bow bow-tied" id="bow">
+
       <!-- 卡片實際內容 -->
       <div class="card-inner">
         <div class="card-message">
-          <!-- ⭐ 卡片標題 / 內文：這一區塊完全留給你編輯 ⭐ -->
           <h2>在這裡寫你的標題</h2>
           <p>
             這裡是卡片內文的範例。<br>
@@ -246,32 +231,38 @@
         </div>
       </div>
 
-      <!-- 卡片封面（會翻開） -->
+      <!-- 卡片封面 -->
       <div class="card-cover">
         <span>Happy Birthday</span>
       </div>
     </div>
-    <div class="hint"></div>
   </div>
 
-  <!-- 愛心容器 -->
   <div class="hearts-container" id="hearts"></div>
 
   <script>
     const card = document.getElementById("card");
+    const bow = document.getElementById("bow");
     const heartsContainer = document.getElementById("hearts");
 
-    card.addEventListener("click", () => {
-      const isOpening = !card.classList.contains("open");
-      card.classList.toggle("open");
+    let opened = false;
 
-      if (isOpening) {
+    card.addEventListener("click", () => {
+      if (opened) return;
+      opened = true;
+
+      // 🎀 開蝴蝶結動畫
+      bow.classList.remove("bow-tied");
+      bow.classList.add("bow-open");
+
+      // 延遲 400ms 再打開卡片，較流暢
+      setTimeout(() => {
+        card.classList.add("open");
         launchHearts();
-      }
+      }, 400);
     });
 
     function launchHearts() {
-      // 從卡片內部中心位置發射愛心，讓效果更準
       const inner = card.querySelector(".card-inner");
       const rect = inner.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
@@ -282,7 +273,7 @@
       for (let i = 0; i < totalHearts; i++) {
         setTimeout(() => {
           createHeart(centerX, centerY);
-        }, i * 120); // 每顆愛心延遲一點，感覺比較有「一波一波散開」
+        }, i * 120);
       }
     }
 
@@ -290,8 +281,7 @@
       const heart = document.createElement("span");
       heart.classList.add("heart");
 
-      // 給每個愛心一點左右的隨機偏移量
-      const offset = (Math.random() * 220 - 110).toFixed(0); // -110 ~ 110px
+      const offset = (Math.random() * 220 - 110).toFixed(0);
       heart.style.setProperty("--x-offset", offset + "px");
 
       heart.style.left = x + "px";
@@ -304,5 +294,7 @@
       });
     }
   </script>
+
 </body>
 </html>
+
