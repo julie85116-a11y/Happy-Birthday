@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Jerry Cake Card</title>
+  <!-- 手機顯示必備，讓寬度跟隨裝置 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * {
       box-sizing: border-box;
@@ -18,6 +20,7 @@
       background-color: #fdf3e7;
       position: relative;
       overflow: hidden;
+      padding: 16px; /* 手機時避免卡片貼邊 */
     }
 
     /* 背景蛋糕圖（透明度在這裡調整） */
@@ -25,8 +28,8 @@
       content: "";
       position: fixed;
       inset: 0;
-      background-image: url("jerry2.jpg"); /* ← 在這裡換成傑利鼠蛋糕圖片路徑 */
-      background-size: contain;  /* 想要整個滿版可以改成 cover */
+      background-image: url("jerry2.jpg"); /* ← 這裡放你的傑利鼠蛋糕圖片路徑 */
+      background-size: contain;  /* 想要滿版可改 cover */
       background-repeat: no-repeat;
       background-position: center;
       opacity: 0.65;            /* 透明度，0~1 之間，可自行調整 */
@@ -36,11 +39,15 @@
     .card-wrapper {
       position: relative;
       perspective: 1200px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .card {
       width: 360px;
-      height: 240px;
+      height: 240px; /* 預設電腦版大小 */
       position: relative;
       cursor: pointer;
     }
@@ -62,7 +69,7 @@
 
       /* 🎀 如果你有自己的卡片邊框圖片，把下面三行註解打開，並把路徑改掉
       border: 20px solid transparent;
-      border-image: url("卡片邊框E.png") 30 round;  /* ← 在這裡換成你的邊框圖檔 */
+      border-image: url("卡片邊框E.png") 30 round;
       */
     }
 
@@ -112,11 +119,13 @@
       margin-top: 0;
       text-align: center;
       color: #ff9800;
+      font-size: 1.3rem;
     }
 
     .card-message p {
       line-height: 1.6;
       margin: 8px 0;
+      font-size: 0.95rem;
     }
 
     /* 愛心容器（整個畫面上飄） */
@@ -179,6 +188,43 @@
       font-size: 0.9rem;
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
     }
+
+    /* ========= 手機版 RWD ========= */
+    @media (max-width: 600px) {
+      body {
+        padding: 12px;
+      }
+
+      .card {
+        width: 90vw;           /* 寬度跟著螢幕走 */
+        height: 60vw;          /* 照比例縮小，避免太高 */
+        max-width: 380px;
+        max-height: 260px;
+      }
+
+      .card-inner {
+        padding: 16px;
+        border-radius: 16px;
+      }
+
+      .card-cover {
+        border-radius: 16px;
+        font-size: 1.1rem;
+      }
+
+      .card-cover::after {
+        font-size: 0.8rem;
+        bottom: 14px;
+      }
+
+      .card-message h2 {
+        font-size: 1.1rem;
+      }
+
+      .card-message p {
+        font-size: 0.85rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -204,8 +250,8 @@
       <div class="card-cover">
         <span>Happy Birthday</span>
       </div>
-      </div>
-    <div class="hint"></div>
+    </div>
+    <div class="hint">💖</div>
   </div>
 
   <!-- 愛心容器 -->
@@ -225,8 +271,9 @@
     });
 
     function launchHearts() {
-      // 從卡片中心位置發射愛心
-      const rect = card.getBoundingClientRect();
+      // 從卡片內部中心位置發射愛心，讓效果更準
+      const inner = card.querySelector(".card-inner");
+      const rect = inner.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
 
