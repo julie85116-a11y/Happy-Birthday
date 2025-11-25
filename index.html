@@ -83,7 +83,7 @@
       transform: rotateY(0deg);
       transition: transform 0.8s ease, box-shadow 0.8s ease;
       backface-visibility: hidden;
-      z-index: 3; /* 封面最上層 */
+      z-index: 3;
     }
 
     .card-cover::after {
@@ -106,13 +106,26 @@
       pointer-events: none;
     }
 
-    /* 蝴蝶結綁住時縮尺寸 + 有立體感 */
     .bow-tied {
       transform: translate(-50%, -50%) scale(1);
       opacity: 1;
     }
 
-    /* 開啟 → 蝴蝶結淡出散開 */
+    /* 🎀 蝴蝶結抖動動畫 */
+    @keyframes bowShake {
+      0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+      20% { transform: translate(calc(-50% - 3px), -50%) rotate(-6deg) scale(1.02); }
+      40% { transform: translate(calc(-50% + 3px), -50%) rotate(6deg) scale(1.02); }
+      60% { transform: translate(calc(-50% - 2px), -50%) rotate(-4deg) scale(1.01); }
+      80% { transform: translate(calc(-50% + 2px), -50%) rotate(4deg) scale(1.01); }
+      100% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+    }
+
+    .bow-shake {
+      animation: bowShake 0.45s ease;
+    }
+
+    /* 蝴蝶結彈開 */
     .bow-open {
       transform: translate(-50%, -120%) scale(1.6) rotate(20deg);
       opacity: 0;
@@ -197,6 +210,7 @@
       }
     }
 
+    /* 手機 RWD */
     @media (max-width: 600px) {
       .card {
         width: 90vw;
@@ -216,7 +230,7 @@
       <!-- 🎀 蝴蝶結 -->
       <img src="bow.png" class="bow bow-tied" id="bow">
 
-      <!-- 卡片實際內容 -->
+      <!-- 卡片內容 -->
       <div class="card-inner">
         <div class="card-message">
           <h2>在這裡寫你的標題</h2>
@@ -235,6 +249,7 @@
       <div class="card-cover">
         <span>Happy Birthday</span>
       </div>
+
     </div>
   </div>
 
@@ -251,15 +266,21 @@
       if (opened) return;
       opened = true;
 
-      // 🎀 開蝴蝶結動畫
-      bow.classList.remove("bow-tied");
-      bow.classList.add("bow-open");
+      /* 1️⃣ 蝴蝶結抖動 */
+      bow.classList.add("bow-shake");
 
-      // 延遲 400ms 再打開卡片，較流暢
+      /* 2️⃣ 抖動後 → 蝴蝶結彈開 */
+      setTimeout(() => {
+        bow.classList.remove("bow-shake");
+        bow.classList.remove("bow-tied");
+        bow.classList.add("bow-open");
+      }, 450);
+
+      /* 3️⃣ 蝴蝶結飛走後 → 卡片翻開 + 愛心 */
       setTimeout(() => {
         card.classList.add("open");
         launchHearts();
-      }, 400);
+      }, 900);
     });
 
     function launchHearts() {
@@ -297,4 +318,3 @@
 
 </body>
 </html>
-
