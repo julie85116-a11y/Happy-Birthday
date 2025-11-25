@@ -14,25 +14,48 @@
       align-items: center;
       justify-content: center;
       font-family: "Microsoft JhengHei", system-ui, sans-serif;
-      background-color: #fdf3e7;
       padding: 16px;
       overflow: hidden;
       position: relative;
     }
 
-    /* 背景蛋糕圖 */
+    /* ===============================
+       電腦版：滿版 + 不裁切背景（contain）
+       以柔焦漸層填補空白區域
+       =============================== */
     body::before {
       content: "";
       position: fixed;
       inset: 0;
+
+      /* 背景蛋糕圖（完整顯示） */
       background-image: url("jerry2.jpg");
-      background-size: contain;
+
+      background-size: contain;          /* ✔ 不裁切 */
       background-repeat: no-repeat;
       background-position: center;
-      opacity: 0.65;
+
+      /* 周圍用柔和背景填補（避免黑邊） */
+      background-color: #f7e6d4;         /* 可自行改顏色 */
+
+      /* 柔焦背景混合 */
+      background-blend-mode: soft-light;
+      opacity: 0.8;
+
       z-index: -1;
     }
 
+    /* ===============================
+       手機版背景：採 cover（裁切，但畫面漂亮）
+       =============================== */
+    @media (max-width: 600px) {
+      body::before {
+        background-size: cover;     /* ✔ 手機改為滿版裁切 */
+        opacity: 0.55;              /* 讓前景更清楚 */
+      }
+    }
+
+    /* ======== 卡片區塊 ======== */
     .card-wrapper {
       perspective: 1200px;
       width: 100%;
@@ -47,7 +70,7 @@
       cursor: pointer;
     }
 
-    /* 內頁 */
+    /* 內頁內容 */
     .card-inner {
       width: 100%;
       height: 100%;
@@ -64,8 +87,8 @@
     .card-message {
       width: 100%;
       height: 100%;
-      color: #5d4037;
       overflow-y: auto;
+      color: #5d4037;
     }
 
     .card-message h2 {
@@ -81,7 +104,7 @@
       font-size: 0.95rem;
     }
 
-    /* 封面 */
+    /* ======== 封面 ======== */
     .card-cover {
       position: absolute;
       inset: 0;
@@ -89,10 +112,7 @@
       background-color: #4b2f33;
       box-shadow: 0 16px 40px rgba(0,0,0,0.35);
       z-index: 3;
-      backface-visibility: hidden;
       overflow: hidden;
-      opacity: 1;
-      transform: scale(1);
       transition: opacity 0.6s ease, transform 0.6s ease;
     }
 
@@ -129,16 +149,15 @@
       top: 32%;
       left: 50%;
       transform: translate(-50%, -55%);
-      background-image: url("bow.png");
+      background-image: url("bow.png"); /* 你的蝴蝶結圖 */
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
       z-index: 4;
-      pointer-events: none;
       transition: transform 0.7s ease, opacity 0.7s ease;
     }
 
-    /* 更清楚的封面提示文字 */
+    /* 提示文字（更清楚） */
     .cover-hint {
       position: absolute;
       bottom: 20px;
@@ -147,20 +166,19 @@
       color: #ffffff;
       font-size: 1rem;
       font-weight: bold;
-      text-shadow: 
-        0 0 6px rgba(255,105,180,0.8),
-        0 0 12px rgba(255,182,210,0.7);
-      opacity: 1;
+      text-shadow:
+        0 0 6px rgba(255,105,180,0.9),
+        0 0 12px rgba(255,182,210,0.8),
+        0 0 18px rgba(255,220,230,0.8);
     }
 
     /* 卡片開啟：封面淡出 */
     .card.open .card-cover {
       opacity: 0;
       transform: scale(1.03);
-      pointer-events: none;
     }
 
-    /* 緞帶左右打開 */
+    /* 緞帶解開 */
     .card-cover.untie .ribbon-vertical {
       transform: translateX(-250%);
       opacity: 0;
@@ -176,7 +194,7 @@
       opacity: 0;
     }
 
-    /* 愛心 */
+    /* 飄愛心 */
     .hearts-container {
       position: fixed;
       inset: 0;
@@ -221,7 +239,7 @@
       }
     }
 
-    /* 手機 */
+    /* 手機尺寸 */
     @media (max-width: 600px) {
       .card { width: 90vw; height: 60vw; }
       .bow { width: 120px; height: 120px; }
@@ -238,7 +256,7 @@
         <div class="card-message">
           <h2>在這裡寫你的標題</h2>
           <p>這裡是卡片內文的範例。</p>
-          <p>你可以把這段文字刪掉改成自己的內容。</p>
+          <p>你可以把這段文字改成自己的內容。</p>
         </div>
       </div>
 
@@ -264,9 +282,9 @@
 
     card.addEventListener("click", () => {
 
-      /* 開啟 → 關閉 */
       if (!isOpen) {
         isOpen = true;
+
         cover.classList.add("untie");
 
         setTimeout(() => {
@@ -275,14 +293,11 @@
         }, 750);
 
       } else {
-        /* 關閉卡片 */
         isOpen = false;
-        card.classList.remove("open");
 
-        /* 把緞帶與蝴蝶結復原 */
+        card.classList.remove("open");
         cover.classList.remove("untie");
 
-        /* 等封面回來後再恢復透明度 */
         setTimeout(() => {
           cover.style.opacity = "1";
           cover.style.transform = "scale(1)";
@@ -290,7 +305,6 @@
       }
     });
 
-    /* 愛心 */
     function launchHearts() {
       const inner = card.querySelector(".card-inner");
       const rect = inner.getBoundingClientRect();
@@ -299,9 +313,7 @@
 
       const totalHearts = 18;
       for (let i = 0; i < totalHearts; i++) {
-        setTimeout(() => {
-          createHeart(centerX, centerY);
-        }, i * 120);
+        setTimeout(() => createHeart(centerX, centerY), i * 120);
       }
     }
 
@@ -321,6 +333,7 @@
 
 </body>
 </html>
+
 
 
 
